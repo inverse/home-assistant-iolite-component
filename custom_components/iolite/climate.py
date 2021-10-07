@@ -18,10 +18,9 @@ from homeassistant.const import (
     CONF_USERNAME,
     TEMP_CELSIUS,
 )
-
-from iolite.client import Client
-from iolite.entity import RadiatorValve
-from iolite.oauth_handler import OAuthHandler
+from iolite_client.client import Client
+from iolite_client.entity import RadiatorValve
+from iolite_client.oauth_handler import OAuthHandler
 
 from .const import DOMAIN, STORAGE_KEY, STORAGE_VERSION
 

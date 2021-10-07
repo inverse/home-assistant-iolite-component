@@ -3,8 +3,8 @@ from typing import Any, Dict, Optional
 
 from homeassistant import config_entries
 
-from iolite import ACTUAL_SCHEMA
-from iolite.const import DOMAIN
+from . import ACTUAL_SCHEMA
+from .const import DOMAIN
 
 
 class IoliteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):

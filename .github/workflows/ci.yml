@@ -33,4 +33,4 @@ jobs:
     - name: Install pip dependencies
       run: pip install -r requirements.test.txt
     - name: Test
-      run: pytest --cov-report xml --cov=iolite test/
+      run: pytest

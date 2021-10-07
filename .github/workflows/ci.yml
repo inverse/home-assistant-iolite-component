@@ -17,7 +17,9 @@ jobs:
       with:
         python-version: 3.9
     - name: pre-commit
-      run: poetry run pre-commit run --all-files --show-diff-on-failure
+      run: |
+      pip install pre-commit
+      pre-commit run --all-files --show-diff-on-failure
   test:
     strategy:
       matrix:
@@ -31,4 +33,4 @@ jobs:
     - name: Install pip dependencies
       run: pip install -r requirements.test.txt
     - name: Test
-      run: poetry run pytest --cov-report xml --cov=iolite test/
+      run: pytest --cov-report xml --cov=iolite test/

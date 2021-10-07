@@ -126,7 +126,8 @@ class RadiatorValveEntity(ClimateEntity):
         )
 
         if not matched:
-            raise "Unable to find device"
+            _LOGGER.warn(f"Failed to resolve RadiatorValue for {self.valve.identifier}")
+            return
 
         self.valve = matched
         self._update_state()

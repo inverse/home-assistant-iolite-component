@@ -125,3 +125,4 @@ class RadiatorValveEntity(ClimateEntity):
 
     async def async_update(self) -> None:
         """Retrieve latest state."""
+        pass

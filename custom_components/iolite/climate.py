@@ -71,7 +71,7 @@ async def get_sid(
         await store.async_save(access_token)
 
     if access_token["expires_at"] < time.time():
-        _LOGGER.debug("Acess token expired, refreshing")
+        _LOGGER.debug("Access token expired, refreshing")
         refreshed_token = oauth_handler.get_new_access_token(
             access_token["refresh_token"]
         )

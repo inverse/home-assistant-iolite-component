@@ -111,7 +111,7 @@ class RadiatorValveEntity(ClimateEntity):
         if temperature is None:
             return
 
-        self.client.set_temp(self.valve.identifier, temperature)
+        await self.client.async_set_temp(self.valve.identifier, temperature)
 
     @property
     def hvac_mode(self):

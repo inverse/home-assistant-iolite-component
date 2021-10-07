@@ -5,18 +5,17 @@ from homeassistant.helpers import config_validation as cv
 
 from .const import DOMAIN
 
-CONFIG_SCHEMA = vol.Schema(
+ACTUAL_SCHEMA = vol.Schema(
     {
-        DOMAIN: vol.Schema(
-            {
-                vol.Required(CONF_USERNAME): cv.string,
-                vol.Required(CONF_PASSWORD): cv.string,
-                vol.Required(CONF_NAME): cv.string,
-                vol.Required(CONF_CODE): cv.string,
-            },
-        )
+        vol.Required(CONF_USERNAME): cv.string,
+        vol.Required(CONF_PASSWORD): cv.string,
+        vol.Required(CONF_NAME): cv.string,
+        vol.Required(CONF_CODE): cv.string,
     },
-    extra=vol.ALLOW_EXTRA,
+)
+
+CONFIG_SCHEMA = vol.Schema(
+    {DOMAIN: ACTUAL_SCHEMA},
 )
 
 

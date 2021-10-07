@@ -1,3 +1,5 @@
+"""Support for IOLITE heating."""
+
 import logging
 import time
 from typing import Any
@@ -64,6 +66,7 @@ async def get_sid(
     oauth_handler: OAuthHandler,
     store: core.HomeAssistant.helpers.storage.Store,
 ):
+    """Get SID."""
     access_token = await store.async_load()
     if access_token is None:
         _LOGGER.debug("No access token in storage, requesting")
@@ -86,6 +89,7 @@ async def get_sid(
 
 
 class RadiatorValveEntity(ClimateEntity):
+    """Map RadiatorValue to Climate entity."""
 
     _attr_temperature_unit: str = TEMP_CELSIUS
     _attr_target_temperature_step: float = 0.5
@@ -93,6 +97,7 @@ class RadiatorValveEntity(ClimateEntity):
     _attr_supported_features: int = SUPPORT_FLAGS
 
     def __init__(self, valve: RadiatorValve, client: Client):
+        """Initialize the valve."""
         self.valve = valve
         self.client = client
         self._attr_unique_id = valve.identifier
@@ -117,3 +122,6 @@ class RadiatorValveEntity(ClimateEntity):
     def hvac_mode(self):
         """Return hvac operation."""
         return HVAC_MODE_HEAT
+
+    async def async_update(self) -> None:
+        """Retrieve latest state."""

@@ -100,14 +100,9 @@ class RadiatorValveEntity(ClimateEntity):
         self.valve = valve
         self.client = client
         self._attr_unique_id = valve.identifier
-        self._attr_name = valve.name
-        self._attr_min_temp = self._heater.get_min_temp()
-        self._attr_max_temp = self._heater.get_max_temp()
-        self._attr_device_info = {
-            "identifiers": {(DOMAIN, self.unique_id)},
-            "name": self.name,
-            "manufacturer": valve.manufacturer,
-        }
+        self._attr_min_temp = 0
+        self._attr_max_temp = 30
+        self._update_state()
 
     async def async_set_temperature(self, **kwargs: Any) -> None:
         """Set new target temperature."""
@@ -124,4 +119,23 @@ class RadiatorValveEntity(ClimateEntity):
 
     async def async_update(self) -> None:
         """Retrieve latest state."""
-        pass
+        await self.client.discover()
+
+        matched = self.client.discovered.find_device_by_identifier(
+            self.valve.identifier
+        )
+
+        if not matched:
+            raise "Unable to find device"
+
+        self.valve = matched
+        self._update_state()
+
+    def _update_state(self):
+        self._attr_name = self.valve.name
+        self._attr_current_temperature = self.valve.current_env_temp
+        self._attr_device_info = {
+            "identifiers": {(DOMAIN, self._attr_unique_id)},
+            "name": self._attr_name,
+            "manufacturer": self.valve.manufacturer,
+        }

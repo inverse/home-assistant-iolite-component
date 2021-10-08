@@ -119,7 +119,7 @@ class RadiatorValveEntity(ClimateEntity):
 
     async def async_update(self) -> None:
         """Retrieve latest state."""
-        await self.client.discover()
+        await self.client.async_discover()
 
         matched = self.client.discovered.find_device_by_identifier(
             self.valve.identifier

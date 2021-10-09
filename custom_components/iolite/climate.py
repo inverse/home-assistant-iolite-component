@@ -4,7 +4,7 @@ import logging
 import time
 from typing import Any
 
-from homeassistant import config_entries, core
+from homeassistant import config_entries
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
     HVAC_MODE_HEAT,
@@ -18,6 +18,7 @@ from homeassistant.const import (
     CONF_USERNAME,
     TEMP_CELSIUS,
 )
+from homeassistant.core import HomeAssistant
 from iolite_client.client import Client
 from iolite_client.entity import RadiatorValve
 from iolite_client.oauth_handler import OAuthHandler
@@ -30,7 +31,7 @@ SUPPORT_FLAGS = SUPPORT_TARGET_TEMPERATURE
 
 
 async def async_setup_entry(
-    hass: core.HomeAssistant,
+    hass: HomeAssistant,
     config_entry: config_entries.ConfigEntry,
     async_add_entities,
 ):
@@ -63,7 +64,7 @@ async def get_sid(
     code: str,
     name: str,
     oauth_handler: OAuthHandler,
-    store: core.HomeAssistant.helpers.storage.Store,
+    store: HomeAssistant.helpers.storage.Store,
 ):
     """Get SID."""
     access_token = await store.async_load()

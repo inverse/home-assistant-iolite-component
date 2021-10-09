@@ -6,7 +6,6 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_CODE, CONF_NAME, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers import config_validation as cv
 
-from . import ACTUAL_SCHEMA
 from .const import DOMAIN
 
 SCHEMA = vol.Schema(
@@ -25,6 +24,6 @@ class IoliteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
         """Invoked when a user initiates a flow via the user interface."""
         if user_input is not None:
-            return self.async_create_entry(title="IOLITE", data=self.data)
+            return self.async_create_entry(title="IOLITE", data=user_input)
 
-        return self.async_show_form(step_id="user", data_schema=ACTUAL_SCHEMA)
+        return self.async_show_form(step_id="user", data_schema=SCHEMA)

@@ -1,0 +1,19 @@
+{
+    "config": {
+      "error": {
+        "auth": "The provided input is not valid."
+      },
+      "step": {
+        "user": {
+          "data": {
+            "username": "IOLITE username",
+            "password": "IOLITE password",
+            "name": "Name to be registered in IOLITE platform",
+            "code": "IOLITE pairing code"
+          },
+          "description": "Enter your IOLITE credentials.",
+          "title": "Authentication"
+        }
+      }
+    }
+}

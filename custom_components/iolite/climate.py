@@ -19,6 +19,7 @@ from homeassistant.const import (
     TEMP_CELSIUS,
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.storage import Store
 from iolite_client.client import Client
 from iolite_client.entity import RadiatorValve
 from iolite_client.oauth_handler import OAuthHandler
@@ -49,7 +50,7 @@ async def async_setup_entry(
     sid = await get_sid(config[CONF_CODE], config[CONF_NAME], oauth_handler, store)
 
     client = Client(sid, username, password)
-    await client._async_discover()
+    await client.async_discover()
 
     # Map radiator valves
     devices = []
@@ -64,7 +65,7 @@ async def get_sid(
     code: str,
     name: str,
     oauth_handler: OAuthHandler,
-    store: HomeAssistant.helpers.storage.Store,
+    store: Store,
 ):
     """Get SID."""
     access_token = await store.async_load()

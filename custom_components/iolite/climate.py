@@ -19,10 +19,11 @@ from homeassistant.const import (
     TEMP_CELSIUS,
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.storage import Store
 from iolite_client.client import Client
 from iolite_client.entity import RadiatorValve
-from iolite_client.oauth_handler import OAuthHandler
+from iolite_client.oauth_handler import AsyncOAuthHandler
 
 from .const import DOMAIN, STORAGE_KEY, STORAGE_VERSION
 
@@ -39,6 +40,7 @@ async def async_setup_entry(
     """Setup from config entry."""
 
     config = config_entry.data
+    web_session = async_get_clientsession(hass)
 
     username = config[CONF_USERNAME]
     password = config[CONF_PASSWORD]
@@ -46,7 +48,7 @@ async def async_setup_entry(
     store = hass.helpers.storage.Store(STORAGE_VERSION, STORAGE_KEY)
 
     # Get SID
-    oauth_handler = OAuthHandler(username, password)
+    oauth_handler = AsyncOAuthHandler(username, password, web_session)
     sid = await get_sid(config[CONF_CODE], config[CONF_NAME], oauth_handler, store)
 
     client = Client(sid, username, password)
@@ -54,29 +56,30 @@ async def async_setup_entry(
 
     # Map radiator valves
     devices = []
-    for device in client.discovered:
-        if isinstance(device, RadiatorValve):
-            devices.append(RadiatorValveEntity(device, client))
+    for room in client.discovered.get_rooms():
+        for device in room.devices.values():
+            if isinstance(device, RadiatorValve):
+                devices.append(RadiatorValveEntity(device, client))
 
-    async_add_entities(devices, True)
+    for device in devices:
+        _LOGGER.info(f"Adding {device}")
+
+    async_add_entities(devices, update_before_add=True)
 
 
-async def get_sid(
-    code: str,
-    name: str,
-    oauth_handler: OAuthHandler,
-    store: Store,
-):
+async def get_sid(code: str, name: str, oauth_handler: AsyncOAuthHandler, store: Store):
     """Get SID."""
     access_token = await store.async_load()
     if access_token is None:
         _LOGGER.debug("No access token in storage, requesting")
-        access_token = oauth_handler.get_access_token(code, name)
+        access_token = await oauth_handler.get_access_token(code, name)
+        expires_at = time.time() + access_token["expires_in"]
+        access_token.update({"expires_at": expires_at})
         await store.async_save(access_token)
 
     if access_token["expires_at"] < time.time():
         _LOGGER.debug("Access token expired, refreshing")
-        refreshed_token = oauth_handler.get_new_access_token(
+        refreshed_token = await oauth_handler.get_new_access_token(
             access_token["refresh_token"]
         )
         await store.async_save(refreshed_token)
@@ -86,7 +89,7 @@ async def get_sid(
 
     _LOGGER.debug("Fetched access token")
 
-    return oauth_handler.get_sid(token)
+    return await oauth_handler.get_sid(token)
 
 
 class RadiatorValveEntity(ClimateEntity):

@@ -12,6 +12,8 @@ async def async_setup_entry(
         hass.config_entries.async_forward_entry_setup(entry, "climate")
     )
 
+    return True
+
 
 async def async_setup(hass: core.HomeAssistant, config: dict) -> bool:
     """Set up the component from yaml configuration."""

@@ -87,7 +87,7 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         web_session: ClientSession,
         username: str,
         password: str,
-        name: str,
+        pairing_name: str,
         code: str,
     ):
         """Initialiser."""
@@ -95,7 +95,7 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         self.web_session = web_session
         self.username = username
         self.password = password
-        self.name = name
+        self.pairing_name = pairing_name
         self.code = code
         self.client = None
 
@@ -109,7 +109,7 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         oauth_handler = AsyncOAuthHandler(
             self.username, self.password, self.web_session
         )
-        sid = await get_sid(self.code, self.name, oauth_handler, store)
+        sid = await get_sid(self.code, self.pairing_name, oauth_handler, store)
 
         self.client = Client(sid, self.username, self.password)
         await self.client.async_discover()

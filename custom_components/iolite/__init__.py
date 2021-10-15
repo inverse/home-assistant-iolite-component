@@ -23,7 +23,7 @@ PLATFORMS = ["climate"]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up platform from a ConfigEntry."""
-    # Forward the setup to the climate platform
+    hass.data.setdefault(DOMAIN, {})
     username: str = entry.data[CONF_USERNAME]
     password: str = entry.data[CONF_PASSWORD]
     name: str = entry.data[CONF_NAME]

@@ -11,7 +11,6 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.storage import Store
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from iolite_client.client import Client
-from iolite_client.entity import RadiatorValve
 from iolite_client.oauth_handler import AsyncOAuthHandler
 
 from .const import DOMAIN, STORAGE_KEY, STORAGE_VERSION
@@ -114,13 +113,8 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         self.client = Client(sid, self.username, self.password)
         await self.client.async_discover()
 
-        # Map entities valves
-        devices = {}
-
-        devices.setdefault("valves", {})
+        rooms = {}
         for room in self.client.discovered.get_rooms():
-            for device in room.devices.values():
-                if isinstance(device, RadiatorValve):
-                    devices["valves"][device.identifier] = device
+            rooms[room.identifier] = room
 
-        return devices
+        return rooms

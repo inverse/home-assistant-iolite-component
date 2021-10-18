@@ -1,4 +1,4 @@
-from unittest import mock
+"""Tests for the config flows."""
 from custom_components.iolite import config_flow
 
 

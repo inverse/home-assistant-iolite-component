@@ -28,10 +28,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     name: str = entry.data[CONF_NAME]
     code: str = entry.data[CONF_CODE]
 
-    websession = async_get_clientsession(hass)
+    web_session = async_get_clientsession(hass)
 
     coordinator = IoliteDataUpdateCoordinator(
-        hass, websession, username, password, name, code
+        hass, web_session, username, password, name, code
     )
 
     await coordinator.async_config_entry_first_refresh()

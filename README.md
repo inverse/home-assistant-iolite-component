@@ -1,12 +1,21 @@
 # IOLITE for Home Assistant
 
-Home Assistant integration for IOLITE remote API for controlling heating elements.
+Home Assistant integration for IOLITE remote API for controlling heating elements that's based on the [iolite-client](https://github.com/inverse/python-iolite-client) library.
+
+Currently supports:
+
+- Climate entity control
 
 This integration is very much WIP and under development.
 
 ## Installation
 
-TBD
+Follow the [hacs](https://hacs.xyz/docs/faq/custom_repositories) documentation for adding a custom repository.
+
+Repo: `https://github.com/inverse/home-assistant-iolite-component`
+
+Setup the integration using your IOLITE credentials which can be obtained by following the [iolite-client](https://github.com/inverse/python-iolite-client#getting-credentials) library documentation on how to obtain credentials.
+
 
 ## Credits
 

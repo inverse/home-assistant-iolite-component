@@ -15,7 +15,7 @@ from .const import DOMAIN, STORAGE_KEY, STORAGE_VERSION
 
 _LOGGER = logging.getLogger(__name__)
 
-SCHEMA = vol.Schema(
+AUTH_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_USERNAME): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
@@ -47,7 +47,7 @@ class IoliteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
         """Invoked when a user initiates a flow via the user interface."""
         if user_input is None:
-            return self.async_show_form(step_id="user", data_schema=SCHEMA)
+            return self.async_show_form(step_id="user", data_schema=AUTH_SCHEMA)
 
         errors: Dict[str, str] = {}
 

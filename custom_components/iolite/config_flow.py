@@ -46,21 +46,24 @@ class IoliteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
         """Invoked when a user initiates a flow via the user interface."""
-        if user_input is None:
-            return self.async_show_form(step_id="user", data_schema=AUTH_SCHEMA)
 
         errors: Dict[str, str] = {}
+        if user_input is not None:
+            try:
+                await validate_and_persist_auth(
+                    self.hass,
+                    user_input[CONF_USERNAME],
+                    user_input[CONF_PASSWORD],
+                    user_input[CONF_NAME],
+                    user_input[CONF_CODE],
+                )
+            except Exception as e:
+                errors["base"] = "auth"
+                _LOGGER.error(f"Failed to validate auth: {e}")
 
-        try:
-            validate_and_persist_auth(
-                self.hass,
-                user_input[CONF_USERNAME],
-                user_input[CONF_PASSWORD],
-                user_input[CONF_NAME],
-                user_input[CONF_CODE],
-            )
-        except Exception as e:
-            errors["config"] = "auth"
-            _LOGGER.error(f"Failed to validate auth: {e}")
+            if not errors:
+                return self.async_create_entry(title="IOLITE", data=user_input)
 
-        return self.async_create_entry(title="IOLITE", data=user_input, errors=errors)
+        return self.async_show_form(
+            step_id="user", data_schema=AUTH_SCHEMA, errors=errors
+        )

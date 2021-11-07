@@ -10,7 +10,7 @@ from homeassistant.components.climate.const import (
     HVAC_MODE_OFF,
     SUPPORT_TARGET_TEMPERATURE,
 )
-from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
+from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS, ATTR_BATTERY_LEVEL
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from iolite_client.client import Client
@@ -108,3 +108,12 @@ class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
         ].current_env_temp
         if room.heating:
             self._attr_target_temperature = room.heating.target_temp
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return extra state attributes."""
+        extra_state_attributes = {
+            ATTR_BATTERY_LEVEL: self.valve.battery_level,
+        }
+
+        return extra_state_attributes

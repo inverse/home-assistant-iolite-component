@@ -57,6 +57,9 @@ async def get_sid(oauth_handler: AsyncOAuthHandler, store: Store):
         refreshed_token = await oauth_handler.get_new_access_token(
             access_token["refresh_token"]
         )
+        expires_at = time.time() + refreshed_token["expires_in"]
+        refreshed_token.update({"expires_at": expires_at})
+        del refreshed_token["expires_in"]
         await store.async_save(refreshed_token)
         token = refreshed_token["access_token"]
     else:

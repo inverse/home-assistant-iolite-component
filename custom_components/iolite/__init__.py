@@ -14,7 +14,6 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from iolite_client.client import Client
 from iolite_client.oauth_handler import AsyncOAuthHandler
 
-
 from .const import DOMAIN, STORAGE_KEY, STORAGE_VERSION
 
 _LOGGER = logging.getLogger(__name__)

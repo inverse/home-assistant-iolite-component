@@ -63,7 +63,7 @@ async def get_sid(oauth_handler: AsyncOAuthHandler, store: Store):
 
     try:
         return await oauth_handler.get_sid(token)
-    except BaseException as e:
+    except HTTPError as e:
         _LOGGER.warning(f"Invalid token, attempt refresh: {e}")
         token = await refresh_token(oauth_handler, store, access_token)
         return await oauth_handler.get_sid(token)
@@ -73,13 +73,9 @@ async def refresh_token(
     oauth_handler: AsyncOAuthHandler, store: Store, access_token: dict
 ) -> str:
     """Refresh token."""
-    try:
-        refreshed_token = await oauth_handler.get_new_access_token(
-            access_token["refresh_token"]
-        )
-    except HTTPError as e:
-        _LOGGER.error(f"Failed to get new access token: {e}")
-
+    refreshed_token = await oauth_handler.get_new_access_token(
+        access_token["refresh_token"]
+    )
     expires_at = time.time() + refreshed_token["expires_in"]
     refreshed_token.update({"expires_at": expires_at})
     del refreshed_token["expires_in"]

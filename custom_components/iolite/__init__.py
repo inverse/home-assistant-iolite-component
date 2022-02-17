@@ -4,7 +4,6 @@ from datetime import timedelta
 from typing import Any, Dict
 
 from aiohttp import ClientSession
-from aiohttp.web_exceptions import HTTPError
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
@@ -63,7 +62,7 @@ async def get_sid(oauth_handler: AsyncOAuthHandler, store: Store):
 
     try:
         return await oauth_handler.get_sid(token)
-    except HTTPError as e:
+    except BaseException as e:
         _LOGGER.warning(f"Invalid token, attempt refresh: {e}")
         token = await refresh_token(oauth_handler, store, access_token)
         return await oauth_handler.get_sid(token)

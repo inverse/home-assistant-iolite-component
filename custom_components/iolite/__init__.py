@@ -4,6 +4,7 @@ from datetime import timedelta
 from typing import Any, Dict
 
 from aiohttp import ClientSession
+from aiohttp.web_exceptions import HTTPError
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
@@ -54,20 +55,37 @@ async def get_sid(oauth_handler: AsyncOAuthHandler, store: Store):
 
     if access_token["expires_at"] < time.time():
         _LOGGER.debug("Access token expired, refreshing")
-        refreshed_token = await oauth_handler.get_new_access_token(
-            access_token["refresh_token"]
-        )
-        expires_at = time.time() + refreshed_token["expires_in"]
-        refreshed_token.update({"expires_at": expires_at})
-        del refreshed_token["expires_in"]
-        await store.async_save(refreshed_token)
-        token = refreshed_token["access_token"]
+        token = await refresh_token(oauth_handler, store, access_token)
     else:
         token = access_token["access_token"]
 
     _LOGGER.debug("Fetched access token")
 
-    return await oauth_handler.get_sid(token)
+    try:
+        return await oauth_handler.get_sid(token)
+    except BaseException as e:
+        _LOGGER.warning(f"Invalid token, attempt refresh: {e}")
+        token = await refresh_token(oauth_handler, store, access_token)
+        return await oauth_handler.get_sid(token)
+
+
+async def refresh_token(
+    oauth_handler: AsyncOAuthHandler, store: Store, access_token: dict
+) -> str:
+    """Refresh token."""
+    try:
+        refreshed_token = await oauth_handler.get_new_access_token(
+            access_token["refresh_token"]
+        )
+    except HTTPError as e:
+        _LOGGER.error(f"Failed to get new access token: {e}")
+
+    expires_at = time.time() + refreshed_token["expires_in"]
+    refreshed_token.update({"expires_at": expires_at})
+    del refreshed_token["expires_in"]
+    await store.async_save(refreshed_token)
+
+    return refreshed_token["access_token"]
 
 
 class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
@@ -93,7 +111,6 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
     async def _async_update_data(self) -> dict[str, Any]:
         store = self.hass.helpers.storage.Store(STORAGE_VERSION, STORAGE_KEY)
 
-        # Get SID
         oauth_handler = AsyncOAuthHandler(
             self.username, self.password, self.web_session
         )

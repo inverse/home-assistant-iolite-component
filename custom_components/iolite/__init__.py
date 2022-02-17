@@ -4,6 +4,7 @@ from datetime import timedelta
 from typing import Any, Dict
 
 from aiohttp import ClientSession
+from aiohttp.web_exceptions import HTTPError
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
@@ -12,7 +13,7 @@ from homeassistant.helpers.storage import Store
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from iolite_client.client import Client
 from iolite_client.oauth_handler import AsyncOAuthHandler
-from requests.exceptions import RequestException
+
 
 from .const import DOMAIN, STORAGE_KEY, STORAGE_VERSION
 
@@ -63,9 +64,9 @@ async def get_sid(oauth_handler: AsyncOAuthHandler, store: Store):
 
     try:
         return await oauth_handler.get_sid(token)
-    except RequestException as e:
+    except BaseException as e:
         _LOGGER.warning(f"Invalid token, attempt refresh: {e}")
-        token = refresh_token(oauth_handler, store, access_token)
+        token = await refresh_token(oauth_handler, store, access_token)
         return await oauth_handler.get_sid(token)
 
 
@@ -77,7 +78,7 @@ async def refresh_token(
         refreshed_token = await oauth_handler.get_new_access_token(
             access_token["refresh_token"]
         )
-    except RequestException as e:
+    except HTTPError as e:
         _LOGGER.error(f"Failed to get new access token: {e}")
 
     expires_at = time.time() + refreshed_token["expires_in"]

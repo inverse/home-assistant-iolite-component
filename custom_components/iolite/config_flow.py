@@ -12,6 +12,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from iolite_client.oauth_handler import AsyncOAuthHandler
 
 from .const import DOMAIN, STORAGE_KEY, STORAGE_VERSION
+from . import HaOAuthStorageInterface
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -34,12 +35,8 @@ async def validate_and_persist_auth(
     web_session = async_get_clientsession(hass)
     oauth_handler = AsyncOAuthHandler(username, password, web_session)
     access_token = await oauth_handler.get_access_token(code, name)
-
-    expires_at = time.time() + access_token["expires_in"]
-    access_token.update({"expires_at": expires_at})
-    del access_token["expires_in"]
-    store = hass.helpers.storage.Store(STORAGE_VERSION, STORAGE_KEY)
-    await store.async_save(access_token)
+    storage = HaOAuthStorageInterface(hass)
+    await storage.store_access_token(access_token)
 
 
 class IoliteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):

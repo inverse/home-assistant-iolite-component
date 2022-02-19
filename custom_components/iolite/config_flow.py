@@ -1,6 +1,5 @@
 """Config flow for IOLITE."""
 import logging
-import time
 from typing import Any, Dict, Optional
 
 import voluptuous as vol
@@ -11,8 +10,8 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from iolite_client.oauth_handler import AsyncOAuthHandler
 
-from .const import DOMAIN, STORAGE_KEY, STORAGE_VERSION
 from . import HaOAuthStorageInterface
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 

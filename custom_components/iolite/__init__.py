@@ -8,7 +8,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.storage import Store
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from iolite_client.client import Client
 from iolite_client.oauth_handler import AsyncOAuthHandler, AsyncOAuthStorageInterface
@@ -124,6 +123,7 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         self.username = username
         self.password = password
         self.storage = storage
+        self.client = None
 
         update_interval = timedelta(seconds=30)
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=update_interval)
@@ -134,11 +134,11 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         )
         sid = await get_sid(oauth_handler, self.storage)
 
-        client = Client(sid, self.username, self.password)
-        await client.async_discover()
+        self.client = Client(sid, self.username, self.password)
+        await self.client.async_discover()
 
         rooms = {}
-        for room in client.discovered.get_rooms():
+        for room in self.client.discovered.get_rooms():
             rooms[room.identifier] = room
 
         return rooms

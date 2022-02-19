@@ -98,7 +98,6 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         self.web_session = web_session
         self.username = username
         self.password = password
-        self.client = None
 
         update_interval = timedelta(seconds=30)
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=update_interval)
@@ -111,11 +110,11 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         )
         sid = await get_sid(oauth_handler, store)
 
-        self.client = Client(sid, self.username, self.password)
-        await self.client.async_discover()
+        client = Client(sid, self.username, self.password)
+        await client.async_discover()
 
         rooms = {}
-        for room in self.client.discovered.get_rooms():
+        for room in client.discovered.get_rooms():
             rooms[room.identifier] = room
 
         return rooms

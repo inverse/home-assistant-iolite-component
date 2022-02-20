@@ -96,9 +96,6 @@ class HaOAuthStorageInterface(AsyncOAuthStorageInterface):
 
     async def store_access_token(self, payload: dict):
         """Store access token."""
-        expires_at = time.time() + payload["expires_in"]
-        payload.update({"expires_at": expires_at})
-        del payload["expires_in"]
         await self.store.async_save(payload)
 
     async def fetch_access_token(self) -> Optional[dict]:

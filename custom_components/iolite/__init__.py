@@ -81,7 +81,7 @@ async def refresh_token(
     refreshed_token = await oauth_handler.get_new_access_token(
         access_token["refresh_token"]
     )
-    storage.store_access_token(refresh_token)
+    await storage.store_access_token(refreshed_token)
 
     return refreshed_token["access_token"]
 

@@ -21,6 +21,10 @@ OPERATION_LIST = [HVACMode.HEAT, HVACMode.OFF]
 SUPPORT_FLAGS = ClimateEntityFeature.TARGET_TEMPERATURE
 
 
+TEMP_MIN = 0
+TEMP_BASE = 14
+TEMP_MAX = 30
+
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: config_entries.ConfigEntry,
@@ -58,8 +62,8 @@ class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
         self.valve = valve
         self.client = client
         self._attr_unique_id = valve.identifier
-        self._attr_min_temp = 0
-        self._attr_max_temp = 30
+        self._attr_min_temp = TEMP_MIN
+        self._attr_max_temp = TEMP_MAX
         self._attr_name = f"{self.valve.name} ({room.name})"
         self._attr_device_info = {
             "identifiers": {(DOMAIN, self._attr_unique_id)},
@@ -100,6 +104,13 @@ class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
             return HVACMode.OFF
 
         return HVACMode.HEAT
+
+    async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
+        """Set new operation mode."""
+        if hvac_mode == HVACMode.OFF:
+            await self.async_set_temperature(temperature=TEMP_MIN)
+        else:
+            await self.async_set_temperature(temperature=TEMP_BASE)
 
     def _update_state(self):
         valve: RadiatorValve = self.room.devices[self.valve.identifier]

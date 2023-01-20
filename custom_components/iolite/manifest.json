@@ -6,6 +6,6 @@
   "domain": "iolite",
   "iot_class": "cloud_polling",
   "name": "IOLITE",
-  "requirements": ["iolite-client==0.5.0"],
+  "requirements": ["iolite-client==0.5.2"],
   "version": "0.1.0"
 }

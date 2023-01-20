@@ -25,6 +25,7 @@ TEMP_MIN = 0
 TEMP_BASE = 14
 TEMP_MAX = 30
 
+
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: config_entries.ConfigEntry,

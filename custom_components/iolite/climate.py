@@ -4,12 +4,8 @@ import logging
 from typing import Any
 
 from homeassistant import config_entries
-from homeassistant.components.climate import ClimateEntity
-from homeassistant.components.climate.const import (
-    HVAC_MODE_HEAT,
-    HVAC_MODE_OFF,
-    SUPPORT_TARGET_TEMPERATURE,
-)
+from homeassistant.components.climate import ClimateEntity, HVACMode
+from homeassistant.components.climate.const import ClimateEntityFeature
 from homeassistant.const import ATTR_BATTERY_LEVEL, ATTR_TEMPERATURE, TEMP_CELSIUS
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -21,13 +17,8 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-
-SUPPORTED_HVAC_MODES = [
-    # HVAC_MODE_OFF,
-    # HVAC_MODE_HEAT
-]
-
-SUPPORT_FLAGS = SUPPORT_TARGET_TEMPERATURE
+OPERATION_LIST = [HVACMode.HEAT, HVACMode.OFF]
+SUPPORT_FLAGS = ClimateEntityFeature.TARGET_TEMPERATURE
 
 
 async def async_setup_entry(
@@ -59,7 +50,6 @@ class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
 
     _attr_temperature_unit: str = TEMP_CELSIUS
     _attr_target_temperature_step: float = 0.5
-    _attr_hvac_modes: list = SUPPORTED_HVAC_MODES
     _attr_supported_features: int = SUPPORT_FLAGS
 
     def __init__(self, coordinator, valve: RadiatorValve, room: Room, client: Client):
@@ -94,20 +84,28 @@ class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
         self.async_write_ha_state()
 
     @property
+    def hvac_modes(self) -> list[HVACMode]:
+        """Return the list of available operation modes."""
+        return OPERATION_LIST
+
+    @property
+    def room(self) -> Room:
+        """Return device data object from coordinator."""
+        return self.coordinator.data[self.valve.place_identifier]
+
+    @property
     def hvac_mode(self):
         """Return hvac target hvac state."""
         if self._attr_current_temperature == self._attr_target_temperature:
-            return HVAC_MODE_OFF
+            return HVACMode.OFF
 
-        return HVAC_MODE_HEAT
+        return HVACMode.HEAT
 
     def _update_state(self):
-        room: Room = self.coordinator.data[self.valve.place_identifier]
-        self._attr_current_temperature = room.devices[
-            self.valve.identifier
-        ].current_env_temp
-        if room.heating:
-            self._attr_target_temperature = room.heating.target_temp
+        valve: RadiatorValve = self.room.devices[self.valve.identifier]
+        self._attr_current_temperature = valve.current_env_temp
+        if self.room.heating:
+            self._attr_target_temperature = self.room.heating.target_temp
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:

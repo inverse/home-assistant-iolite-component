@@ -45,7 +45,7 @@ async def async_setup_entry(
         for device in room.devices.values():
             if isinstance(device, RadiatorValve):
                 devices.append(
-                    RadiatorValveEntity(coordinator, device, coordinator.client)
+                    RadiatorValveEntity(coordinator, device, room, coordinator.client)
                 )
 
     for device in devices:
@@ -62,7 +62,7 @@ class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
     _attr_hvac_modes: list = SUPPORTED_HVAC_MODES
     _attr_supported_features: int = SUPPORT_FLAGS
 
-    def __init__(self, coordinator, valve: RadiatorValve, client: Client):
+    def __init__(self, coordinator, valve: RadiatorValve, room: Room, client: Client):
         """Initialize the valve."""
         super().__init__(coordinator)
         self.valve = valve
@@ -70,7 +70,7 @@ class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
         self._attr_unique_id = valve.identifier
         self._attr_min_temp = 0
         self._attr_max_temp = 30
-        self._attr_name = self.valve.name
+        self._attr_name = f"{self.valve.name} ({room.name})"
         self._attr_device_info = {
             "identifiers": {(DOMAIN, self._attr_unique_id)},
             "name": self._attr_name,

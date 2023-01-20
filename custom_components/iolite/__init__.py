@@ -114,7 +114,7 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         password: str,
         storage: AsyncOAuthStorageInterface,
     ):
-        """Initialiser."""
+        """Initializer."""
         self.hass = hass
         self.web_session = web_session
         self.username = username

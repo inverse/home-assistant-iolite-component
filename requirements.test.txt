@@ -3,4 +3,4 @@ pytest
 pytest-cov
 pytest-homeassistant-custom-component
 # From manifest
-iolite-client==0.5.0
+iolite-client==0.5.1

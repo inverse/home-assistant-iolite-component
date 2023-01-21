@@ -100,7 +100,7 @@ class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
     @property
     def hvac_mode(self):
         """Return hvac target hvac state."""
-        if self._attr_current_temperature == self._attr_target_temperature:
+        if self._attr_target_temperature == TEMP_MIN:
             return HVACMode.OFF
 
         return HVACMode.HEAT

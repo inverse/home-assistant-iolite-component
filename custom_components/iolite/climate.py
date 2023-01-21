@@ -21,7 +21,8 @@ OPERATION_LIST = [HVACMode.HEAT, HVACMode.OFF]
 SUPPORT_FLAGS = ClimateEntityFeature.TARGET_TEMPERATURE
 
 
-TEMP_MIN = 6
+TEMP_MIN = 0
+TEMP_REAL_MIN = 6
 TEMP_MAX = 30
 
 
@@ -77,6 +78,9 @@ class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
         temperature = kwargs.get(ATTR_TEMPERATURE)
         if temperature is None:
             return
+
+        if temperature <= TEMP_REAL_MIN:
+            temperature = TEMP_REAL_MIN
 
         await self.client.async_set_temp(self.valve.identifier, temperature)
         await self.coordinator.async_request_refresh()

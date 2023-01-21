@@ -21,8 +21,7 @@ OPERATION_LIST = [HVACMode.HEAT, HVACMode.OFF]
 SUPPORT_FLAGS = ClimateEntityFeature.TARGET_TEMPERATURE
 
 
-TEMP_MIN = 0
-TEMP_BASE = 14
+TEMP_MIN = 6
 TEMP_MAX = 30
 
 
@@ -111,7 +110,7 @@ class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
         if hvac_mode == HVACMode.OFF:
             await self.async_set_temperature(temperature=TEMP_MIN)
         else:
-            await self.async_set_temperature(temperature=TEMP_BASE)
+            await self.async_set_temperature(temperature=self.target_temperature)
 
     def _update_state(self):
         valve: RadiatorValve = self.room.devices[self.valve.identifier]

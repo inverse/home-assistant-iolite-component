@@ -4,14 +4,20 @@ from typing import Any, Dict, Optional
 
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import CONF_CODE, CONF_NAME, CONF_PASSWORD, CONF_USERNAME, CONF_SCAN_INTERVAL
+from homeassistant.const import (
+    CONF_CODE,
+    CONF_NAME,
+    CONF_PASSWORD,
+    CONF_SCAN_INTERVAL,
+    CONF_USERNAME,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from iolite_client.oauth_handler import AsyncOAuthHandler
 
 from . import HaOAuthStorageInterface
-from .const import DOMAIN, DEFAULT_SCAN_INTERVAL_SECONDS
+from .const import DEFAULT_SCAN_INTERVAL_SECONDS, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,7 +27,9 @@ AUTH_SCHEMA = vol.Schema(
         vol.Required(CONF_PASSWORD): cv.string,
         vol.Required(CONF_NAME): cv.string,
         vol.Required(CONF_CODE): cv.string,
-        vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL_SECONDS): vol.All(int),
+        vol.Optional(
+            CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL_SECONDS
+        ): vol.All(int),
     },
 )
 

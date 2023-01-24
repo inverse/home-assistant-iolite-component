@@ -5,14 +5,14 @@ from typing import Any, Dict, Optional
 
 from aiohttp import ClientSession
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, CONF_SCAN_INTERVAL
+from homeassistant.const import CONF_PASSWORD, CONF_SCAN_INTERVAL, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from iolite_client.client import Client
 from iolite_client.oauth_handler import AsyncOAuthHandler, AsyncOAuthStorageInterface
 
-from .const import DOMAIN, STORAGE_KEY, STORAGE_VERSION
+from .const import DEFAULT_SCAN_INTERVAL_SECONDS, DOMAIN, STORAGE_KEY, STORAGE_VERSION
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +24,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
     username: str = entry.data[CONF_USERNAME]
     password: str = entry.data[CONF_PASSWORD]
-    scan_interval_seconds: int = entry.data[CONF_SCAN_INTERVAL]
+    scan_interval_seconds: int = entry.data.get(
+        CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL_SECONDS
+    )
 
     web_session = async_get_clientsession(hass)
 
@@ -114,7 +116,7 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         username: str,
         password: str,
         storage: AsyncOAuthStorageInterface,
-        update_interval: int
+        update_interval: int,
     ):
         """Initializer."""
         self.hass = hass

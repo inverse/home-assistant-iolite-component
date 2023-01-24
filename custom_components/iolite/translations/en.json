@@ -9,7 +9,8 @@
             "username": "IOLITE username",
             "password": "IOLITE password",
             "name": "Name to be registered in IOLITE platform",
-            "code": "IOLITE pairing code"
+            "code": "IOLITE pairing code",
+            "scan_interval": "Number of seconds between scans"
           },
           "description": "Enter your IOLITE credentials.",
           "title": "Authentication"

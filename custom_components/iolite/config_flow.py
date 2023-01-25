@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional
 
 import voluptuous as vol
 from homeassistant import config_entries
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_CODE,
     CONF_NAME,
@@ -11,7 +12,8 @@ from homeassistant.const import (
     CONF_SCAN_INTERVAL,
     CONF_USERNAME,
 )
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from iolite_client.oauth_handler import AsyncOAuthHandler
@@ -22,6 +24,9 @@ from .const import DEFAULT_SCAN_INTERVAL_SECONDS, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
+MIN_SCAN_INTERVAL = 15
+MAX_SCAN_INTERVAL = 120
+
 AUTH_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_USERNAME): cv.string,
@@ -30,7 +35,7 @@ AUTH_SCHEMA = vol.Schema(
         vol.Required(CONF_CODE): cv.string,
         vol.Optional(
             CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL_SECONDS
-        ): vol.All(int, Range(min=15, max=120)),
+        ): vol.All(int, Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL)),
     },
 )
 
@@ -50,6 +55,15 @@ async def validate_and_persist_auth(
 
 class IoliteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """IOLITE config flow."""
+
+    VERSION = 1
+    CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry: ConfigEntry):
+        """Initiate Options Flow Instance"""
+        return IoliteOptionsFlow(config_entry)
 
     async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
         """Invoked when a user initiates a flow via the user interface."""
@@ -73,4 +87,32 @@ class IoliteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user", data_schema=AUTH_SCHEMA, errors=errors
+        )
+
+
+class IoliteOptionsFlow(config_entries.OptionsFlow):
+    """IOLITE options flow"""
+
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        """Initialize Hue options flow."""
+        self.config_entry = config_entry
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Manage Hue options."""
+        if user_input is not None:
+            return self.async_create_entry(title="", data=user_input)
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema(
+                {
+                    vol.Optional(
+                        CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL_SECONDS
+                    ): vol.All(
+                        int, Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL)
+                    ),
+                }
+            ),
         )

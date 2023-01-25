@@ -2,5 +2,6 @@ pre-commit
 pytest
 pytest-cov
 pytest-homeassistant-custom-component
+pytest-asyncio
 # From manifest
 iolite-client==0.6.0

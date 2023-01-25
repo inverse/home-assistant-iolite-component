@@ -15,6 +15,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from iolite_client.oauth_handler import AsyncOAuthHandler
+from voluptuous import Range
 
 from . import HaOAuthStorageInterface
 from .const import DEFAULT_SCAN_INTERVAL_SECONDS, DOMAIN
@@ -29,7 +30,7 @@ AUTH_SCHEMA = vol.Schema(
         vol.Required(CONF_CODE): cv.string,
         vol.Optional(
             CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL_SECONDS
-        ): vol.All(int),
+        ): vol.All(int, Range(min=15, max=120)),
     },
 )
 

@@ -33,9 +33,11 @@ AUTH_SCHEMA = vol.Schema(
         vol.Required(CONF_PASSWORD): cv.string,
         vol.Required(CONF_NAME): cv.string,
         vol.Required(CONF_CODE): cv.string,
-        vol.Optional(
+        vol.Required(
             CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL_SECONDS
-        ): vol.All(int, Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL)),
+        ): vol.All(
+            vol.Coerce(int), Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL)
+        ),
     },
 )
 
@@ -108,10 +110,11 @@ class IoliteOptionsFlow(config_entries.OptionsFlow):
             step_id="init",
             data_schema=vol.Schema(
                 {
-                    vol.Optional(
+                    vol.Required(
                         CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL_SECONDS
                     ): vol.All(
-                        int, Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL)
+                        vol.Coerce(int),
+                        Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
                     ),
                 }
             ),

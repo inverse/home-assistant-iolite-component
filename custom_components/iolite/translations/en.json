@@ -1,20 +1,31 @@
 {
-    "config": {
-      "error": {
-        "auth": "The provided input is not valid."
-      },
-      "step": {
-        "user": {
-          "data": {
-            "username": "IOLITE username",
-            "password": "IOLITE password",
-            "name": "Name to be registered in IOLITE platform",
-            "code": "IOLITE pairing code",
-            "scan_interval": "Number of seconds between scans"
-          },
-          "description": "Enter your IOLITE credentials.",
-          "title": "Authentication"
+  "config": {
+    "error": {
+      "auth": "The provided input is not valid."
+    },
+    "step": {
+      "user": {
+        "title": "IOLite Configuration ",
+        "description": "Enter your IOLITE configuration settings",
+        "data": {
+          "username": "IOLITE username",
+          "password": "IOLITE password",
+          "name": "Name to be registered in IOLITE platform",
+          "code": "IOLITE pairing code",
+          "scan_interval": "Number of seconds between scans"
         }
       }
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "IOLite Configuration ",
+        "description": "Enter your IOLITE configuration settings",
+        "data": {
+          "scan_interval": "Number of seconds between scans"
+        }
+      }
+    }
+  }
 }

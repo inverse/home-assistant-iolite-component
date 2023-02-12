@@ -116,7 +116,7 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         username: str,
         password: str,
         storage: AsyncOAuthStorageInterface,
-        update_interval: int,
+        scan_interval_seconds: int,
     ):
         """Initializer."""
         self.hass = hass
@@ -126,7 +126,7 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         self.storage = storage
         self.client = None
 
-        update_interval = timedelta(seconds=update_interval)
+        update_interval = timedelta(seconds=scan_interval_seconds)
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=update_interval)
 
     async def _async_update_data(self) -> dict[str, Any]:

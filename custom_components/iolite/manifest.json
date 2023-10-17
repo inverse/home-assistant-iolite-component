@@ -1,11 +1,15 @@
 {
-  "codeowners": ["@inverse"],
+  "codeowners": [
+      "@inverse"
+  ],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/inverse/home-assistant-iolite-component",
   "domain": "iolite",
   "iot_class": "cloud_polling",
   "name": "IOLITE",
-  "requirements": ["iolite-client==0.6.0"],
+  "requirements": [
+      "iolite-client==0.6.0"
+  ],
   "version": "0.1.0"
 }

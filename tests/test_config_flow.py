@@ -10,7 +10,6 @@ from homeassistant.core import HomeAssistant
 from custom_components.iolite import DOMAIN
 
 
-@pytest.mark.asyncio
 async def test_flow_show_form(hass: HomeAssistant) -> None:
     """Test that the setup form is served."""
     result = await hass.config_entries.flow.async_init(
@@ -21,7 +20,6 @@ async def test_flow_show_form(hass: HomeAssistant) -> None:
     assert result["step_id"] == "user"
 
 
-@pytest.mark.asyncio
 @patch("custom_components.iolite.config_flow.validate_and_persist_auth")
 async def test_flow_invalid_scan_interval_range(
     _validate_and_persist_auth: Mock, hass: HomeAssistant

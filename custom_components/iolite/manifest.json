@@ -9,7 +9,7 @@
   "documentation": "https://github.com/inverse/home-assistant-iolite-component",
   "iot_class": "cloud_polling",
   "requirements": [
-      "iolite-client==0.6.0"
+      "iolite-client==0.6.1"
   ],
   "version": "0.1.0"
 }

@@ -53,6 +53,8 @@ async def async_setup_entry(
     async_add_entities(devices)
 
 
+# Failed to call service climate/set_temperature. asyncio.run() cannot be called from a running event loop
+
 class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
     """Map RadiatorValue to Climate entity."""
 
@@ -82,7 +84,7 @@ class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
         if temperature is None:
             return
 
-        await self.client.async_set_temp(self.valve.identifier, temperature)
+        await self.client.async_set_property(self.valve.identifier, 'heatingTemperatureSetting', temperature)
         await self.coordinator.async_request_refresh()
 
     @callback
@@ -161,7 +163,7 @@ class InFloorValveEntity(CoordinatorEntity, ClimateEntity):
         if temperature is None:
             return
 
-        await self.client.async_set_temp(self.valve.identifier, temperature)
+        await self.client.async_set_property(self.valve.identifier, 'heatingTemperatureSetting', temperature)
         await self.coordinator.async_request_refresh()
 
     @callback

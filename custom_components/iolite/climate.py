@@ -6,7 +6,7 @@ from typing import Any
 from homeassistant import config_entries
 from homeassistant.components.climate import ClimateEntity, HVACMode
 from homeassistant.components.climate.const import ClimateEntityFeature
-from homeassistant.const import ATTR_BATTERY_LEVEL, ATTR_TEMPERATURE, TEMP_CELSIUS
+from homeassistant.const import ATTR_BATTERY_LEVEL, ATTR_TEMPERATURE, UnitOfTemperature
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from iolite_client.client import Client
@@ -18,8 +18,7 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 OPERATION_LIST = [HVACMode.HEAT, HVACMode.OFF]
-SUPPORT_FLAGS = ClimateEntityFeature.TARGET_TEMPERATURE
-
+SUPPORT_FLAGS = ClimateEntityFeature.TARGET_TEMPERATURE | ClimateEntityFeature.TURN_ON | ClimateEntityFeature.TURN_OFF
 
 TEMP_MIN = 6
 TEMP_MAX = 30
@@ -58,7 +57,7 @@ async def async_setup_entry(
 class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
     """Map RadiatorValue to Climate entity."""
 
-    _attr_temperature_unit: str = TEMP_CELSIUS
+    _attr_temperature_unit: str = UnitOfTemperature.CELSIUS
     _attr_target_temperature_step: float = 0.5
     _attr_supported_features: int = SUPPORT_FLAGS
 
@@ -137,7 +136,7 @@ class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
 class InFloorValveEntity(CoordinatorEntity, ClimateEntity):
     """Map RadiatorValue to Climate entity."""
 
-    _attr_temperature_unit: str = TEMP_CELSIUS
+    _attr_temperature_unit: str = UnitOfTemperature.CELSIUS
     _attr_target_temperature_step: float = 0.5
     _attr_supported_features: int = SUPPORT_FLAGS
 

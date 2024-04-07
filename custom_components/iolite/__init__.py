@@ -5,7 +5,12 @@ from typing import Any, Dict, Optional
 
 from aiohttp import ClientSession
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_PASSWORD, CONF_SCAN_INTERVAL, CONF_USERNAME, CONF_CLIENT_ID
+from homeassistant.const import (
+    CONF_CLIENT_ID,
+    CONF_PASSWORD,
+    CONF_SCAN_INTERVAL,
+    CONF_USERNAME,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
@@ -119,7 +124,7 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         password: str,
         storage: AsyncOAuthStorageInterface,
         scan_interval_seconds: int,
-        client_id: str
+        client_id: str,
     ):
         """Initializer."""
         self.hass = hass

@@ -1,4 +1,5 @@
 """Config flow for IOLITE."""
+
 import logging
 from typing import Any, Dict, Optional
 
@@ -6,9 +7,9 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
+    CONF_CLIENT_ID,
     CONF_CODE,
     CONF_NAME,
-    CONF_CLIENT_ID,
     CONF_PASSWORD,
     CONF_SCAN_INTERVAL,
     CONF_USERNAME,
@@ -45,7 +46,12 @@ AUTH_SCHEMA = vol.Schema(
 
 
 async def validate_and_persist_auth(
-    hass: HomeAssistant, username: str, password: str, client_id: str, name: str, code: str
+    hass: HomeAssistant,
+    username: str,
+    password: str,
+    client_id: str,
+    name: str,
+    code: str,
 ):
     """Validate that the given inputs are correct and persist access token."""
     _LOGGER.debug("Validation IOLITE auth")

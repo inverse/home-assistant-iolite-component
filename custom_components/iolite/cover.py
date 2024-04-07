@@ -1,11 +1,15 @@
 """Support for IOLITE heating."""
 
-import logging
 import asyncio
+import logging
 from typing import Any
 
 from homeassistant import config_entries
-from homeassistant.components.cover import CoverEntity, ATTR_POSITION, CoverEntityFeature
+from homeassistant.components.cover import (
+    ATTR_POSITION,
+    CoverEntity,
+    CoverEntityFeature,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from iolite_client.client import Client
@@ -16,16 +20,18 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-SUPPORT_FLAGS = CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE | CoverEntityFeature.SET_POSITION
+SUPPORT_FLAGS = (
+    CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE | CoverEntityFeature.SET_POSITION
+)
 
 COVER_MIN = 0
 COVER_MAX = 100
 
 
 async def async_setup_entry(
-        hass: HomeAssistant,
-        config_entry: config_entries.ConfigEntry,
-        async_add_entities,
+    hass: HomeAssistant,
+    config_entry: config_entries.ConfigEntry,
+    async_add_entities,
 ):
     """Setup from config entry."""
 
@@ -46,6 +52,7 @@ async def async_setup_entry(
 
 
 # Failed to call service climate/set_temperature. asyncio.run() cannot be called from a running event loop
+
 
 class BlindEntity(CoordinatorEntity, CoverEntity):
     """Map RadiatorValue to Climate entity."""
@@ -73,7 +80,7 @@ class BlindEntity(CoordinatorEntity, CoverEntity):
     @property
     def current_cover_position(self):
         blind: Blind = self.room.devices[self.blind.identifier]
-        return (100 - blind.blind_level)
+        return 100 - blind.blind_level
 
     @property
     def is_closed(self) -> bool:
@@ -86,19 +93,25 @@ class BlindEntity(CoordinatorEntity, CoverEntity):
         if position is None:
             return
 
-        await self.client.async_set_property(self.blind.identifier, 'blindLevel', 100 - position)
+        await self.client.async_set_property(
+            self.blind.identifier, "blindLevel", 100 - position
+        )
         await asyncio.sleep(35)
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
     async def async_close_cover(self, **kwargs):
-        await self.client.async_set_property(self.blind.identifier, 'blindLevel', COVER_MAX)
+        await self.client.async_set_property(
+            self.blind.identifier, "blindLevel", COVER_MAX
+        )
         await asyncio.sleep(35)
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
     async def async_open_cover(self, **kwargs):
-        await self.client.async_set_property(self.blind.identifier, 'blindLevel', COVER_MIN)
+        await self.client.async_set_property(
+            self.blind.identifier, "blindLevel", COVER_MIN
+        )
         await asyncio.sleep(35)
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()

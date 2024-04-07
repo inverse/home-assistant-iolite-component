@@ -10,7 +10,7 @@ from homeassistant.const import ATTR_BATTERY_LEVEL, ATTR_TEMPERATURE, UnitOfTemp
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from iolite_client.client import Client
-from iolite_client.entity import RadiatorValve, Room, InFloorValve
+from iolite_client.entity import InFloorValve, RadiatorValve, Room
 
 from . import IoliteDataUpdateCoordinator
 from .const import DOMAIN
@@ -18,7 +18,11 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 OPERATION_LIST = [HVACMode.HEAT, HVACMode.OFF]
-SUPPORT_FLAGS = ClimateEntityFeature.TARGET_TEMPERATURE | ClimateEntityFeature.TURN_ON | ClimateEntityFeature.TURN_OFF
+SUPPORT_FLAGS = (
+    ClimateEntityFeature.TARGET_TEMPERATURE
+    | ClimateEntityFeature.TURN_ON
+    | ClimateEntityFeature.TURN_OFF
+)
 
 TEMP_MIN = 6
 TEMP_MAX = 30
@@ -54,6 +58,7 @@ async def async_setup_entry(
 
 # Failed to call service climate/set_temperature. asyncio.run() cannot be called from a running event loop
 
+
 class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
     """Map RadiatorValue to Climate entity."""
 
@@ -83,7 +88,9 @@ class RadiatorValveEntity(CoordinatorEntity, ClimateEntity):
         if temperature is None:
             return
 
-        await self.client.async_set_property(self.valve.identifier, 'heatingTemperatureSetting', temperature)
+        await self.client.async_set_property(
+            self.valve.identifier, "heatingTemperatureSetting", temperature
+        )
         await self.coordinator.async_request_refresh()
 
     @callback
@@ -162,7 +169,9 @@ class InFloorValveEntity(CoordinatorEntity, ClimateEntity):
         if temperature is None:
             return
 
-        await self.client.async_set_property(self.valve.identifier, 'heatingTemperatureSetting', temperature)
+        await self.client.async_set_property(
+            self.valve.identifier, "heatingTemperatureSetting", temperature
+        )
         await self.coordinator.async_request_refresh()
 
     @callback

@@ -29,7 +29,7 @@ async def test_flow_invalid_scan_interval_range(
         DOMAIN, context={"source": SOURCE_USER}
     )
 
-    with pytest.raises(data_entry_flow.InvalidData):
+    with pytest.raises(voluptuous.error.MultipleInvalid):
         await hass.config_entries.flow.async_configure(
             result["flow_id"], user_input={CONF_SCAN_INTERVAL: 10}
         )

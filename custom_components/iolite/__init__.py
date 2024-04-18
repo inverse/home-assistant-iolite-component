@@ -5,7 +5,12 @@ from typing import Any, Dict, Optional
 
 from aiohttp import ClientSession
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_PASSWORD, CONF_SCAN_INTERVAL, CONF_USERNAME
+from homeassistant.const import (
+    CONF_CLIENT_ID,
+    CONF_PASSWORD,
+    CONF_SCAN_INTERVAL,
+    CONF_USERNAME,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
@@ -16,7 +21,7 @@ from .const import DEFAULT_SCAN_INTERVAL_SECONDS, DOMAIN, STORAGE_KEY, STORAGE_V
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = ["climate"]
+PLATFORMS = ["climate", "cover"]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -24,6 +29,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
     username: str = entry.data[CONF_USERNAME]
     password: str = entry.data[CONF_PASSWORD]
+    client_id: str = entry.data[CONF_CLIENT_ID]
     scan_interval_seconds: int = entry.data.get(
         CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL_SECONDS
     )
@@ -32,7 +38,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     storage = HaOAuthStorageInterface(hass)
     coordinator = IoliteDataUpdateCoordinator(
-        hass, web_session, username, password, storage, scan_interval_seconds
+        hass, web_session, username, password, storage, scan_interval_seconds, client_id
     )
 
     await coordinator.async_config_entry_first_refresh()
@@ -118,12 +124,14 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         password: str,
         storage: AsyncOAuthStorageInterface,
         scan_interval_seconds: int,
+        client_id: str,
     ):
         """Initializer."""
         self.hass = hass
         self.web_session = web_session
         self.username = username
         self.password = password
+        self.client_id = client_id
         self.storage = storage
         self.client = None
 
@@ -132,7 +140,7 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
 
     async def _async_update_data(self) -> dict[str, Any]:
         oauth_handler = AsyncOAuthHandler(
-            self.username, self.password, self.web_session
+            self.username, self.password, self.web_session, self.client_id
         )
         sid = await get_sid(oauth_handler, self.storage)
 

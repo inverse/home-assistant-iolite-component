@@ -1,4 +1,5 @@
 """Config flow for IOLITE."""
+
 import logging
 from typing import Any, Dict, Optional
 
@@ -6,6 +7,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
+    CONF_CLIENT_ID,
     CONF_CODE,
     CONF_NAME,
     CONF_PASSWORD,
@@ -31,6 +33,7 @@ AUTH_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_USERNAME): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
+        vol.Required(CONF_CLIENT_ID): cv.string,
         vol.Required(CONF_NAME): cv.string,
         vol.Required(CONF_CODE): cv.string,
         vol.Required(
@@ -43,13 +46,18 @@ AUTH_SCHEMA = vol.Schema(
 
 
 async def validate_and_persist_auth(
-    hass: HomeAssistant, username: str, password: str, name: str, code: str
+    hass: HomeAssistant,
+    username: str,
+    password: str,
+    client_id: str,
+    name: str,
+    code: str,
 ):
     """Validate that the given inputs are correct and persist access token."""
     _LOGGER.debug("Validation IOLITE auth")
 
     web_session = async_get_clientsession(hass)
-    oauth_handler = AsyncOAuthHandler(username, password, web_session)
+    oauth_handler = AsyncOAuthHandler(username, password, web_session, client_id)
     access_token = await oauth_handler.get_access_token(code, name)
     storage = HaOAuthStorageInterface(hass)
     await storage.store_access_token(access_token)
@@ -77,6 +85,7 @@ class IoliteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     self.hass,
                     user_input[CONF_USERNAME],
                     user_input[CONF_PASSWORD],
+                    user_input[CONF_CLIENT_ID],
                     user_input[CONF_NAME],
                     user_input[CONF_CODE],
                 )

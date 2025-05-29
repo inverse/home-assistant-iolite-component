@@ -106,7 +106,8 @@ class IoliteOptionsFlow(config_entries.OptionsFlow):
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Initialize Hue options flow."""
-        self.config_entry = config_entry
+        # The config_entry parameter is passed to the constructor but not stored directly
+        # as self.config_entry, which is deprecated in Home Assistant 2025.12
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None

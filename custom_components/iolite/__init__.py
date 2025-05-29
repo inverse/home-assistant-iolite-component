@@ -12,6 +12,7 @@ from homeassistant.const import (
     CONF_USERNAME,
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import storage
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from iolite_client.client import Client
@@ -101,7 +102,7 @@ class HaOAuthStorageInterface(AsyncOAuthStorageInterface):
 
     def __init__(self, hass: HomeAssistant):
         """Init."""
-        self.store = hass.helpers.storage.Store(STORAGE_VERSION, STORAGE_KEY)
+        self.store = storage.Store(hass, STORAGE_VERSION, STORAGE_KEY)
         super().__init__()
 
     async def store_access_token(self, payload: dict):

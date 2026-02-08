@@ -23,7 +23,7 @@ from .const import DEFAULT_SCAN_INTERVAL_SECONDS, DOMAIN, STORAGE_KEY, STORAGE_V
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = ["climate", "cover"]
+PLATFORMS = ["climate", "cover", "sensor"]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

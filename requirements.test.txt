@@ -1,3 +1,3 @@
 pytest-homeassistant-custom-component==0.13.109
 # From manifest
-iolite-client==0.7.5
+iolite-client==0.7.6

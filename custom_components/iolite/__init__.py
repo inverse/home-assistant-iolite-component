@@ -162,7 +162,7 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         )
         sid = await get_sid(oauth_handler, self.storage)
 
-        self.client = Client(sid, self.username, self.password)
+        self.client = Client(sid, self.username, self.password, verify_ssl=self.verify_ssl)
         await self.client.async_discover()
 
         rooms = {}

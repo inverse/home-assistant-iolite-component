@@ -12,7 +12,8 @@
           "password": "IOLITE password",
           "name": "Name to be registered in IOLITE platform",
           "code": "IOLITE pairing code",
-          "scan_interval": "Number of seconds between scans"
+          "scan_interval": "Number of seconds between scans",
+          "verify_ssl": "Verify SSL certificate"
         }
       }
     }
@@ -23,7 +24,8 @@
         "title": "IOLite Configuration ",
         "description": "Enter your IOLITE configuration settings",
         "data": {
-          "scan_interval": "Number of seconds between scans"
+          "scan_interval": "Number of seconds between scans",
+          "verify_ssl": "Verify SSL certificate"
         }
       }
     }

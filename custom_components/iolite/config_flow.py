@@ -13,6 +13,7 @@ from homeassistant.const import (
     CONF_PASSWORD,
     CONF_SCAN_INTERVAL,
     CONF_USERNAME,
+    CONF_VERIFY_SSL,
 )
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
@@ -41,6 +42,7 @@ AUTH_SCHEMA = vol.Schema(
         ): vol.All(
             vol.Coerce(int), Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL)
         ),
+        vol.Optional(CONF_VERIFY_SSL, default=True): cv.boolean,
     },
 )
 
@@ -52,12 +54,15 @@ async def validate_and_persist_auth(
     client_id: str,
     name: str,
     code: str,
+    verify_ssl: bool = True,
 ):
     """Validate that the given inputs are correct and persist access token."""
     _LOGGER.debug("Validation IOLITE auth")
 
     web_session = async_get_clientsession(hass)
-    oauth_handler = AsyncOAuthHandler(username, password, web_session, client_id)
+    oauth_handler = AsyncOAuthHandler(
+        username, password, web_session, client_id, verify_ssl=verify_ssl
+    )
     access_token = await oauth_handler.get_access_token(code, name)
     storage = HaOAuthStorageInterface(hass)
     await storage.store_access_token(access_token)
@@ -88,6 +93,7 @@ class IoliteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     user_input[CONF_CLIENT_ID],
                     user_input[CONF_NAME],
                     user_input[CONF_CODE],
+                    user_input.get(CONF_VERIFY_SSL, True),
                 )
             except Exception as e:
                 errors["base"] = "auth"
@@ -126,6 +132,13 @@ class IoliteOptionsFlow(config_entries.OptionsFlow):
                         vol.Coerce(int),
                         Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
                     ),
+                    vol.Optional(
+                        CONF_VERIFY_SSL,
+                        default=self.config_entry.options.get(
+                            CONF_VERIFY_SSL,
+                            self.config_entry.data.get(CONF_VERIFY_SSL, True),
+                        ),
+                    ): cv.boolean,
                 }
             ),
         )

@@ -10,6 +10,7 @@ from homeassistant.const import (
     CONF_PASSWORD,
     CONF_SCAN_INTERVAL,
     CONF_USERNAME,
+    CONF_VERIFY_SSL,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import storage
@@ -34,12 +35,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     scan_interval_seconds: int = entry.data.get(
         CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL_SECONDS
     )
+    verify_ssl: bool = entry.options.get(
+        CONF_VERIFY_SSL, entry.data.get(CONF_VERIFY_SSL, True)
+    )
 
     web_session = async_get_clientsession(hass)
 
     storage = HaOAuthStorageInterface(hass)
     coordinator = IoliteDataUpdateCoordinator(
-        hass, web_session, username, password, storage, scan_interval_seconds, client_id
+        hass,
+        web_session,
+        username,
+        password,
+        storage,
+        scan_interval_seconds,
+        client_id,
+        verify_ssl,
     )
 
     await coordinator.async_config_entry_first_refresh()
@@ -126,6 +137,7 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         storage: AsyncOAuthStorageInterface,
         scan_interval_seconds: int,
         client_id: str,
+        verify_ssl: bool = True,
     ):
         """Initializer."""
         self.hass = hass
@@ -134,6 +146,7 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         self.password = password
         self.client_id = client_id
         self.storage = storage
+        self.verify_ssl = verify_ssl
         self.client = None
 
         update_interval = timedelta(seconds=scan_interval_seconds)
@@ -141,7 +154,11 @@ class IoliteDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
 
     async def _async_update_data(self) -> dict[str, Any]:
         oauth_handler = AsyncOAuthHandler(
-            self.username, self.password, self.web_session, self.client_id
+            self.username,
+            self.password,
+            self.web_session,
+            self.client_id,
+            verify_ssl=self.verify_ssl,
         )
         sid = await get_sid(oauth_handler, self.storage)
 
